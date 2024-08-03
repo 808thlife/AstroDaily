@@ -1,16 +1,13 @@
-# space_app
+# AstroDaily
 
-A new Flutter project.
+AstroDaily is a Flutter application that brings you two fascinating aspects of our universe every day: the Astronomy Picture of the Day (APOD) and information about near-Earth objects (NEOs) from NASA's databases. Stay updated with stunning space imagery and track asteroids that are close to our planet.
 
-## Getting Started
+## Features
 
-This project is a starting point for a Flutter application.
+- **Astronomy Picture of the Day (APOD):** View the daily photo provided by NASA, along with a detailed description.
+- **Near-Earth Objects (NEOs):** Get daily updates on asteroids that are near Earth, with detailed information about their size, speed, and proximity.
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Extra
+- **NASA API KEY:** You will have to get it and create .env file in root directory of the project. `NASA_API_KEY`=YOUR_KEY

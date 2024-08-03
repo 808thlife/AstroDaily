@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:space_app/screens/photo_of_the_day_screen.dart';
 
 class MainScreenCard extends StatelessWidget {
   const MainScreenCard(
