@@ -62,7 +62,7 @@ class _AsteroidsOfTheWeekScreenState extends State<AsteroidsOfTheWeekScreen> {
     }
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Asteroids of the week"),
+          title: const Text("Today NEOs"),
         ),
         body: content);
   }
