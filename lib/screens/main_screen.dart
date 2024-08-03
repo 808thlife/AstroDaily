@@ -12,7 +12,7 @@ class MainScreen extends StatelessWidget {
       appBar: AppBar(
         centerTitle: false,
         title: Text(
-          "Nasa type shit",
+          "AstroDaily",
           style: Theme.of(context).textTheme.titleLarge,
         ),
       ),
