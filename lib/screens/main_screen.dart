@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:space_app/screens/asteroids_of_the_week_screen.dart';
+import 'package:space_app/screens/asteroids_of_the_day_screen.dart';
 import 'package:space_app/screens/photo_of_the_day_screen.dart';
 import 'package:space_app/widgets/main_screen_card.dart';
 
