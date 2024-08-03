@@ -1,7 +1,11 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:gal/gal.dart';
 
 class PhotoOfTheDayScreen extends StatefulWidget {
   const PhotoOfTheDayScreen({super.key});
@@ -12,6 +16,7 @@ class PhotoOfTheDayScreen extends StatefulWidget {
 
 class _PhotoOfTheDayScreenState extends State<PhotoOfTheDayScreen> {
   var _response;
+  bool isDownloadingImage = false;
   String scaffoldTitle = "";
 
   void callAPI() async {
@@ -72,6 +77,50 @@ class _PhotoOfTheDayScreenState extends State<PhotoOfTheDayScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(scaffoldTitle),
+        actions: [
+          !isDownloadingImage
+              ? IconButton(
+                  icon: const Icon(Icons.download),
+                  onPressed: () async {
+                    final scaffoldMessenger = ScaffoldMessenger.of(context);
+                    // Check for access premission
+                    bool hasAccess = await Gal.hasAccess();
+
+                    // Request access premission
+                    if (!hasAccess) {
+                      await Gal.requestAccess();
+                    }
+                    setState(() {
+                      isDownloadingImage = true;
+                    });
+
+                    final imagePath =
+                        '${Directory.systemTemp.path}/someimage.jpg';
+                    await Dio().download('${_response["hdurl"]}', imagePath);
+
+                    await Gal.putImage(imagePath);
+                    setState(() {
+                      isDownloadingImage = false;
+                    });
+                    scaffoldMessenger.showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          'Image downloaded and saved successfully',
+                        ),
+                        duration: Duration(seconds: 3),
+                      ),
+                    );
+                  },
+                )
+              : const Padding(
+                  padding: EdgeInsets.only(right: 10),
+                  child: SizedBox(
+                    width: 25,
+                    height: 25,
+                    child: CircularProgressIndicator(),
+                  ),
+                ),
+        ],
       ),
       body: content,
     );
