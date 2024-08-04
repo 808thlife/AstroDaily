@@ -6,6 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:gal/gal.dart';
+import 'package:space_app/widgets/youtube_player.dart';
 
 class PhotoOfTheDayScreen extends StatefulWidget {
   const PhotoOfTheDayScreen({super.key});
@@ -22,7 +23,8 @@ class _PhotoOfTheDayScreenState extends State<PhotoOfTheDayScreen> {
   void callAPI() async {
     var response = await http.get(Uri.parse(
         "https://api.nasa.gov/planetary/apod?api_key=${dotenv.env['NASA_API_KEY']}"));
-
+    print(
+        "https://api.nasa.gov/planetary/apod?api_key=${dotenv.env['NASA_API_KEY']}");
     if (response.statusCode == 200) {
       setState(() {
         _response = jsonDecode(response.body);
@@ -40,6 +42,8 @@ class _PhotoOfTheDayScreenState extends State<PhotoOfTheDayScreen> {
   Widget build(BuildContext context) {
     Widget content = const Center(child: CircularProgressIndicator());
     if (_response != null) {
+      //should check if media type is actually a youtube video.
+
       scaffoldTitle = _response["title"].toString();
       content = SingleChildScrollView(
         child: Padding(
@@ -47,12 +51,16 @@ class _PhotoOfTheDayScreenState extends State<PhotoOfTheDayScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Image.network("${_response["hdurl"]}"),
+              (_response["media_type"] != "video")
+                  ? Image.network("${_response["hdurl"]}")
+                  : YoutubePlayerWidget(url: _response["url"]),
               const SizedBox(
                 height: 15,
               ),
               Text(
-                "Was taken on ${_response["date"]} by ${_response["copyright"]}",
+                _response["copyright"] == null
+                    ? "${_response["date"]}"
+                    : "Was taken on ${_response["date"]} by ${_response["copyright"]}",
                 style: Theme.of(context).textTheme.titleMedium,
               ),
               const SizedBox(
@@ -78,48 +86,51 @@ class _PhotoOfTheDayScreenState extends State<PhotoOfTheDayScreen> {
       appBar: AppBar(
         title: Text(scaffoldTitle),
         actions: [
-          !isDownloadingImage
-              ? IconButton(
-                  icon: const Icon(Icons.download),
-                  onPressed: () async {
-                    final scaffoldMessenger = ScaffoldMessenger.of(context);
-                    // Check for access premission
-                    bool hasAccess = await Gal.hasAccess();
+          (_response != null && _response["media_type"] == "image")
+              ? (!isDownloadingImage
+                  ? IconButton(
+                      icon: const Icon(Icons.download),
+                      onPressed: () async {
+                        final scaffoldMessenger = ScaffoldMessenger.of(context);
+                        // Check for access permission
+                        bool hasAccess = await Gal.hasAccess();
 
-                    // Request access premission
-                    if (!hasAccess) {
-                      await Gal.requestAccess();
-                    }
-                    setState(() {
-                      isDownloadingImage = true;
-                    });
+                        // Request access permission
+                        if (!hasAccess) {
+                          await Gal.requestAccess();
+                        }
+                        setState(() {
+                          isDownloadingImage = true;
+                        });
 
-                    final imagePath =
-                        '${Directory.systemTemp.path}/someimage.jpg';
-                    await Dio().download('${_response["hdurl"]}', imagePath);
+                        final imagePath =
+                            '${Directory.systemTemp.path}/someimage.jpg';
+                        await Dio()
+                            .download('${_response["hdurl"]}', imagePath);
 
-                    await Gal.putImage(imagePath);
-                    setState(() {
-                      isDownloadingImage = false;
-                    });
-                    scaffoldMessenger.showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Image downloaded and saved successfully',
-                        ),
-                        duration: Duration(seconds: 3),
+                        await Gal.putImage(imagePath);
+                        setState(() {
+                          isDownloadingImage = false;
+                        });
+                        scaffoldMessenger.showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                              'Image downloaded and saved successfully',
+                            ),
+                            duration: Duration(seconds: 3),
+                          ),
+                        );
+                      },
+                    )
+                  : const Padding(
+                      padding: EdgeInsets.only(right: 10),
+                      child: SizedBox(
+                        width: 25,
+                        height: 25,
+                        child: CircularProgressIndicator(),
                       ),
-                    );
-                  },
-                )
-              : const Padding(
-                  padding: EdgeInsets.only(right: 10),
-                  child: SizedBox(
-                    width: 25,
-                    height: 25,
-                    child: CircularProgressIndicator(),
-                  ),
-                ),
+                    ))
+              : const SizedBox.shrink(),
         ],
       ),
       body: content,

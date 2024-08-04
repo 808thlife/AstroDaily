@@ -31,7 +31,7 @@ class MainScreen extends StatelessWidget {
                     );
                   },
                   child: const MainScreenCard(
-                    title: "Photo of the day",
+                    title: "APOD",
                     imageUrl:
                         "https://images.pexels.com/photos/998641/pexels-photo-998641.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2",
                   ),

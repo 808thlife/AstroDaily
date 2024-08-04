@@ -2,10 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:space_app/screens/main_screen.dart';
 import 'util.dart';
 import 'theme.dart';
-
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 Future main() async {
+  // Ensure that plugin services are initialized so that `SystemChrome` can be used.
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Set the preferred orientations.
+  SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
   runApp(const MyApp());
   await dotenv.load(fileName: ".env");
 }
@@ -28,6 +36,7 @@ class MyApp extends StatelessWidget {
     MaterialTheme theme = MaterialTheme(textTheme);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
+
       title: 'AstroDaily',
       theme: brightness == Brightness.light ? theme.light() : theme.dark(),
       home: const MainScreen(),
